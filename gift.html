@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regalo para mi mejor amiga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030705;
+            --panel: rgba(6, 20, 14, 0.88);
+            --accent: #d9b35f;
+            --accent-strong: #e45a68;
+            --text: #f4f0e6;
+            --muted: #9db8a8;
+            --jade: #1f6f54;
+            --crimson: #741320;
+            --ink: #0a120d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            background: radial-gradient(circle at 20% 20%, #143325, #030705 70%) fixed;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .lock-screen {
+            width: min(420px, 100%);
+            background: var(--panel);
+            border-radius: 28px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(217, 179, 95, 0.25);
+            transition: transform 0.6s ease, opacity 0.6s ease;
+        }
+
+        .lock-screen.success {
+            transform: translateY(-30px) scale(0.95);
+            display: none;
+            pointer-events: none;
+        }
+
+        .lock-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem;
+        }
+
+        .lock-subtitle {
+            margin: 0 0 1.5rem;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .code-display {
+            display: flex;
+            justify-content: center;
+            gap: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-digit {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .code-digit.filled {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #2d1b00;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.65rem;
+        }
+
+        .key {
+            padding: 1rem;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid rgba(217, 179, 95, 0.2);
+        }
+
+        .key:active {
+            transform: translateY(2px);
+            background: rgba(217, 179, 95, 0.25);
+        }
+
+        .key.utility {
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        .feedback {
+            min-height: 24px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--accent-strong);
+        }
+
+        .lock-screen.shake {
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        .gift-content {
+            max-width: clamp(320px, 60vw, 720px);
+            background: linear-gradient(145deg, rgba(7, 20, 14, 0.85), rgba(10, 6, 16, 0.9));
+            border-radius: 28px;
+            padding: clamp(2rem, 4vw, 3rem);
+            text-align: center;
+            line-height: 1.6;
+            display: none;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
+            pointer-events: none;
+            border: 1px solid rgba(228, 90, 104, 0.35);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55);
+        }
+
+        .gift-content.visible {
+            display: block;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .gift-heading {
+            margin-top: 0;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            color: var(--accent);
+        }
+
+        .gift-text {
+            color: #d8e1ff;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .system-card {
+            background: rgba(5, 12, 9, 0.65);
+            border: 1px solid rgba(217, 179, 95, 0.25);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: left;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .system-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% -10%, rgba(228, 90, 104, 0.35), transparent 45%);
+            pointer-events: none;
+        }
+
+        .gallery {
+            margin: 2rem 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .gallery-card {
+            margin: 0;
+            border-radius: 22px;
+            overflow: hidden;
+            border: 1px solid rgba(217, 179, 95, 0.2);
+            box-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+            background: rgba(3, 7, 5, 0.85);
+        }
+
+        .gallery-art {
+            height: 240px;
+        }
+
+        .gallery-card svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .gallery-caption {
+            padding: 1.1rem 1.25rem 1.4rem;
+            color: #ffeef5;
+            font-size: 0.95rem;
+            line-height: 1.45;
+            background: rgba(8, 13, 10, 0.75);
+        }
+
+        .letter-section {
+            margin-top: 2.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .envelope {
+            width: clamp(240px, 60vw, 320px);
+            height: clamp(180px, 42vw, 230px);
+            position: relative;
+            border: none;
+            background: radial-gradient(circle at 30% 20%, rgba(31, 111, 84, 0.25), transparent 55%);
+            padding: 0;
+            cursor: pointer;
+            outline: none;
+            border-radius: 26px;
+            overflow: hidden;
+            transition: overflow 0s linear 0.6s; /* Hide overflow after close */
+        }
+
+        .envelope.open {
+            overflow: visible;
+            transition-delay: 0s; /* Show overflow immediately */
+        }
+
+        .envelope-body {
+            position: absolute;
+            inset: auto 6% 0;
+            height: 70%;
+            background: linear-gradient(140deg, #1a3c2f 0%, #08140f 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(92, 138, 118, 0.35);
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.55), 0 22px 32px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            z-index: 20;
+        }
+
+        .envelope-body::before,
+        .envelope-body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(140deg, rgba(217, 179, 95, 0.15), rgba(3, 7, 5, 0.1));
+        }
+
+        .envelope-body::before {
+            left: 0;
+            clip-path: polygon(0 0, 100% 0, 45% 60%, 0 100%);
+        }
+
+        .envelope-body::after {
+            right: 0;
+            clip-path: polygon(55% 60%, 100% 0, 100% 100%, 0 100%);
+            transform: scaleX(-1);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            inset: 0 4% auto;
+            height: 60%;
+            background: linear-gradient(160deg, #2d5a46, #1a3328);
+            clip-path: polygon(0 0, 100% 0, 50% 70%);
+            border: 1px solid rgba(92, 138, 118, 0.3);
+            filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s, filter 0.6s ease 0.6s, z-index 0s linear 0.6s;
+            z-index: 30;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            filter: drop-shadow(0 18px 24px rgba(228, 90, 104, 0.3));
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0s, filter 0.6s ease 0s, z-index 0s linear 0s;
+            z-index: 1;
+        }
+
+        .wax-seal {
+            position: absolute;
+            bottom: 18%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #a61b29, #5f0f17 80%);
+            border: 2px solid rgba(43, 7, 13, 0.7);
+            color: #ffd9d6;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.05em;
+            box-shadow: 0 12px 18px rgba(0, 0, 0, 0.45);
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .envelope.open .wax-seal {
+            transform: translateX(-50%) scale(0.85);
+            opacity: 0;
+        }
+
+        .letter {
+            position: absolute;
+            width: 85%;
+            left: 50%;
+            bottom: 0;
+            transform: translate(-50%, 10%); /* Start inside/behind body */
+            padding: 2rem 1.5rem;
+            background: #fdfcf8;
+            background-image: linear-gradient(#e6e6e6 1px, transparent 1px);
+            background-size: 100% 1.5rem;
+            border: 1px solid #d9b35f;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.6s ease 0s, z-index 0s linear 0s;
+            pointer-events: none;
+            z-index: 10;
+            font-family: 'Georgia', serif;
+        }
+        
+        .letter::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 2px double #1f6f54;
+            pointer-events: none;
+        }
+
+        .letter::after {
+            display: none;
+        }
+
+        .envelope.open .letter {
+            transform: translate(-50%, -70%);
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s, z-index 0s linear 1.2s;
+            z-index: 25; /* Bring to front after animation */
+        }
+
+        .letter p {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .system-label {
+            margin: 0 0 0.5rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .system-message {
+            margin: 0 0 1.25rem;
+            color: #ffe1f0;
+            font-weight: 600;
+        }
+        .system-message-resalt {
+            color: var(--jade);
+            font-weight: 800;
+        }
+
+        .system-stats {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .system-stats li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: #d4dcff;
+        }
+
+        .system-stats span {
+            color: #ffb7d6;
+            font-weight: 600;
+        }
+
+        .birthday-toast {
+            margin-top: 2rem;
+            color: #f3d8e2;
+            font-size: 1.05rem;
+        }
+
+        .signature {
+            margin-top: 2rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1.5rem 1rem;
+            }
+
+            .lock-screen {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="lock-screen" id="lock">
+            <p class="lock-title">Desbloquea tu regalo</p>
+            <p class="lock-subtitle">Ingresa el código de 6 dígitos que sólo tú conoces</p>
+            <div class="code-display" id="codeDisplay" aria-live="polite">
+                <span class="code-digit" data-index="0"></span>
+                <span class="code-digit" data-index="1"></span>
+                <span class="code-digit" data-index="2"></span>
+                <span class="code-digit" data-index="3"></span>
+                <span class="code-digit" data-index="4"></span>
+                <span class="code-digit" data-index="5"></span>
+            </div>
+            <div class="keypad" aria-label="Teclado numérico">
+                <button class="key" data-value="1">1</button>
+                <button class="key" data-value="2">2</button>
+                <button class="key" data-value="3">3</button>
+                <button class="key" data-value="4">4</button>
+                <button class="key" data-value="5">5</button>
+                <button class="key" data-value="6">6</button>
+                <button class="key" data-value="7">7</button>
+                <button class="key" data-value="8">8</button>
+                <button class="key" data-value="9">9</button>
+                <button class="key utility" data-action="clear">BORRAR</button>
+                <button class="key" data-value="0">0</button>
+                <button class="key utility" data-action="delete">⬅</button>
+            </div>
+            <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="gift-content" id="gift">
+            <h1 class="gift-heading">[¡叮——! ¡Modo cumpleañera activado!]</h1>
+            <p class="gift-text">
+                Si Luo Binghe pudiera ver lo increíble que eres, obligaría al Sistema a declararte su "Persona Favorita" y borraría cualquier castigo de puntos solo por verte sonreír.
+            </p>
+            <p class="gift-text">
+                Gracias por compartir conmigo tus sueños, alegrías y cada arco de esta historia llamada vida. <br> Hoy, al celebrar tu cumpleaños, has desbloqueado una Ruta Secreta: un año lleno de risas, misiones absurdas y finales nivel HE (Happy Ending). Prometo seguir siendo tu aliada en cada misión, sin importar cuántos glitches nos lance el destino.
+            </p>
+            <div class="system-card">
+                <p class="system-label">Notificación del Sistema</p>
+                <p class="system-message">La cultivadora suprema ha obtenido el logro: <span class="system-message-resalt">"Cumpleaños nivel OP"</span></p>
+                <ul class="system-stats">
+                    <li>Rol en Cang Qiong <span>Discípula mimada del Pico Qing Jing</span></li>
+                    <li>Protección asignada <span>El Abanico de Shen Qingqiu + La Xin Mo de Luo Binghe</span></li>
+                    <li>Recompensa diaria <span>Puntos de felicidad ilimitados (Sin penalización de OOC)</span></li>
+                </ul>
+            </div>
+            <h2>Protectores:</h2>
+            <div class="gallery">
+                <figure class="gallery-card">
+                    <div class="gallery-art">
+                        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustración estilizada de Shen Qingqiu con túnica jade y abanico.">
+                            <defs>
+                                <linearGradient id="shen-bg" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#123927" />
+                                    <stop offset="100%" stop-color="#05120b" />
+                                </linearGradient>
+                                <radialGradient id="shen-halo" cx="0.5" cy="0.1" r="0.8">
+                                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+                                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                                </radialGradient>
+                            </defs>
+                            <rect width="200" height="240" fill="url(#shen-bg)" />
+                            <circle cx="100" cy="60" r="88" fill="url(#shen-halo)" opacity="0.3" />
+                            <circle cx="100" cy="80" r="36" fill="#f6d9c6" />
+                            <path d="M42 78 Q100 5 158 78 L154 98 Q100 55 46 98 Z" fill="#1b1f2d" />
+                            <path d="M22 240 L58 120 L100 150 L142 120 L178 240 Z" fill="#197452" />
+                            <path d="M42 240 L100 150 L158 240 Z" fill="#e0c079" opacity="0.85" />
+                            <path d="M65 145 L135 145 L150 190 L50 190 Z" fill="rgba(4,15,10,0.65)" />
+                            <path d="M90 125 L140 185" stroke="#f4f0e6" stroke-width="6" stroke-linecap="round" />
+                            <path d="M70 195 L145 170 L148 190 L73 210 Z" fill="#f7f1e8" opacity="0.8" />
+                        </svg>
+                    </div>
+                    <figcaption class="gallery-caption">Shen Qingqiu — Maestro de jade, ironía afilada y la paciencia que siempre te abraza incluso cuando haces travesuras de discípula.</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <div class="gallery-art">
+                        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustración estilizada de Luo Binghe con armadura carmesí y aura demoníaca.">
+                            <defs>
+                                <linearGradient id="binghe-bg" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#2b070d" />
+                                    <stop offset="100%" stop-color="#08040c" />
+                                </linearGradient>
+                                <radialGradient id="binghe-flare" cx="0.5" cy="0.2" r="0.9">
+                                    <stop offset="0%" stop-color="#e45a68" stop-opacity="0.85" />
+                                    <stop offset="100%" stop-color="#e45a68" stop-opacity="0" />
+                                </radialGradient>
+                            </defs>
+                            <rect width="200" height="240" fill="url(#binghe-bg)" />
+                            <circle cx="100" cy="70" r="90" fill="url(#binghe-flare)" opacity="0.45" />
+                            <circle cx="100" cy="82" r="34" fill="#f3cbb7" />
+                            <path d="M36 78 Q100 10 164 78 L158 108 Q100 58 42 108 Z" fill="#0f0c16" />
+                            <path d="M20 240 L55 130 L100 160 L145 130 L180 240 Z" fill="#751821" />
+                            <path d="M40 240 L100 150 L160 240 Z" fill="#c22f3d" />
+                            <path d="M78 170 L122 170 L150 240 L50 240 Z" fill="rgba(5,4,7,0.7)" />
+                            <path d="M75 200 L125 145" stroke="#fbeadf" stroke-width="7" stroke-linecap="round" />
+                            <circle cx="128" cy="142" r="12" fill="#fbeadf" opacity="0.8" />
+                        </svg>
+                    </div>
+                    <figcaption class="gallery-caption">Luo Binghe — Emperador demonio que sólo se arrodilla para ofrecerte flores, pastel y un millón de finales felices.</figcaption>
+                </figure>
+                <figure class="gallery-card">
+                    <div class="gallery-art">
+                        <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustración luminosa de la discípula protagonista con atuendo blanco perla.">
+                            <defs>
+                                <linearGradient id="heroine-bg" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#fefefe" />
+                                    <stop offset="100%" stop-color="#dfe5f0" />
+                                </linearGradient>
+                                <radialGradient id="heroine-halo" cx="0.5" cy="0.1" r="0.85">
+                                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+                                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                                </radialGradient>
+                                <linearGradient id="heroine-robe" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#ffffff" />
+                                    <stop offset="100%" stop-color="#d5d7e0" />
+                                </linearGradient>
+                                <linearGradient id="heroine-belt" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stop-color="#f1b0c8" />
+                                    <stop offset="100%" stop-color="#f7d18d" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="200" height="240" fill="url(#heroine-bg)" />
+                            <circle cx="100" cy="70" r="90" fill="url(#heroine-halo)" opacity="0.5" />
+                            <circle cx="100" cy="82" r="34" fill="#f8e6da" />
+                            <path d="M40 76 Q100 12 160 76 L154 98 Q100 52 46 98 Z" fill="#edeff3" />
+                            <path d="M26 240 L60 130 L100 160 L140 130 L174 240 Z" fill="url(#heroine-robe)" />
+                            <path d="M44 240 L100 148 L156 240 Z" fill="#f9fafc" opacity="0.85" />
+                            <path d="M60 180 L140 180 L160 240 L40 240 Z" fill="#cdd2e0" />
+                            <rect x="64" y="170" width="72" height="18" rx="8" fill="url(#heroine-belt)" />
+                            <path d="M90 128 L110 188" stroke="#f0c5d0" stroke-width="6" stroke-linecap="round" />
+                            <path d="M70 196 L145 170 L148 196 L73 214 Z" fill="#ffffff" opacity="0.85" />
+                        </svg>
+                    </div>
+                    <figcaption class="gallery-caption">Emily — Tu discípula más leal. La que está lista para hackear el Sistema, ignorar las misiones de castigo y pelearse con cualquier villano que se atreva a arruinar tu día. <b>Mi misión principal: asegurar que tu barra de felicidad siempre esté al 100%.</b></figcaption>
+                </figure>
+            </div>
+            <div class="letter-section">
+                <button class="envelope" id="letterButton" aria-expanded="false">
+                    <div class="letter" aria-hidden="true">
+                        <div class="letter-header" style="border-bottom: 1px solid #1f6f54; margin-bottom: 1rem; padding-bottom: 0.5rem; color: #1f6f54; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; display: flex; justify-content: space-between;">
+                            <span>[Sistema]</span>
+                            <span>✉</span>
+                        </div>
+                        <p>
+                            "¡Shizun favorita del universo! Tu discípula rebelde promete seguirte incluso si el Sistema intenta forzar un drama innecesario. Gracias por enseñarme a encontrar luz en este capitulo de mi vida. ¡Feliz cumpleaños! Que este año esté lleno de aventuras épicas y momentos tan dulces como tus historias favoritas."
+                        </p>
+                    </div>
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-body"></div>
+                    <div class="wax-seal" aria-hidden="true">祝</div>
+                    <span class="open-hint">Haz clic para abrir</span>
+                </button>
+            </div>
+            <p class="birthday-toast">Que cada arco de tu vida tenga la misma magia que tu novela favorita. ¡Feliz cumpleaños, Shizun del caos bonito!</p>
+            <p class="signature">Con todo mi cariño ♡</p>
+        </section>
+    </main>
+
+    <script>
+        const ACCESS_CODE = '281298';
+        const state = {
+            input: ''
+        };
+
+        const lock = document.getElementById('lock');
+        const gift = document.getElementById('gift');
+        const feedback = document.getElementById('feedback');
+        const digits = document.querySelectorAll('.code-digit');
+        const letterButton = document.getElementById('letterButton');
+
+        const updateDisplay = () => {
+            digits.forEach((digit, index) => {
+                if (index < state.input.length) {
+                    digit.textContent = '●';
+                    digit.classList.add('filled');
+                } else {
+                    digit.textContent = '';
+                    digit.classList.remove('filled');
+                }
+            });
+        };
+
+        const resetInput = (message = '') => {
+            state.input = '';
+            updateDisplay();
+            feedback.textContent = message;
+        };
+
+        const unlockGift = () => {
+            lock.classList.add('success');
+            gift.classList.add('visible');
+            feedback.textContent = '';
+        };
+
+        const handleCheck = () => {
+            if (state.input === ACCESS_CODE) {
+                unlockGift();
+            } else {
+                lock.classList.add('shake');
+                feedback.textContent = 'Ese no es el código correcto';
+                setTimeout(() => lock.classList.remove('shake'), 400);
+                resetInput();
+            }
+        };
+
+        const handlePress = (value) => {
+            if (gift.classList.contains('visible')) return;
+            if (state.input.length >= 6) return;
+            state.input += value;
+            updateDisplay();
+            if (state.input.length === 6) {
+                setTimeout(handleCheck, 200);
+            }
+        };
+
+        const handleUtility = (action) => {
+            if (action === 'clear') {
+                resetInput('');
+            } else if (action === 'delete') {
+                state.input = state.input.slice(0, -1);
+                updateDisplay();
+            }
+        };
+
+        document.querySelectorAll('.key').forEach((button) => {
+            button.addEventListener('click', () => {
+                const value = button.dataset.value;
+                const action = button.dataset.action;
+
+                if (value) {
+                    handlePress(value);
+                } else if (action) {
+                    handleUtility(action);
+                }
+            });
+        });
+
+        if (letterButton) {
+            letterButton.addEventListener('click', () => {
+                if (!gift.classList.contains('visible')) return;
+                const isOpen = letterButton.classList.toggle('open');
+                letterButton.setAttribute('aria-expanded', String(isOpen));
+            });
+        }
+    </script>
+</body>
+</html>
